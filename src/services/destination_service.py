@@ -9,8 +9,11 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 from langchain.chains import LLMChain
-from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
+try:
+    from langchain_community.chat_models import ChatOpenAI
+except ImportError:
+    from langchain.llms import OpenAI as ChatOpenAI
 import httpx
 
 from src.config import settings
@@ -38,9 +41,9 @@ class DestinationService(LoggerMixin):
         # Use fine-tuned model if available, otherwise use base model
         model_name = settings.effective_openai_model
         
-        self.llm = OpenAI(
+        self.llm = ChatOpenAI(
             openai_api_key=settings.openai_api_key,
-            model_name=model_name,
+            model=model_name,
             temperature=settings.openai_temperature,
             request_timeout=settings.api_timeout,
             max_retries=settings.max_retries,
@@ -166,14 +169,16 @@ Return response in JSON format:
             "cost_estimate": "Detailed cost information"
         }}
     ]
-}}"""
+}}
+
+IMPORTANT: Ensure the JSON is valid and complete. Do not truncate the response."""
             )
         else:
             self.activity_prompt = PromptTemplate(
                 input_variables=["destination", "theme"],
                 template="""For the {theme} destination "{destination}", suggest specific activities.
 
-Provide 5-7 activities with details:
+Provide exactly 5 activities with details:
 1. Activity name
 2. Brief description
 3. Activity type (Outdoor/Indoor/Cultural/Adventure/Relaxation/Educational)
@@ -181,7 +186,7 @@ Provide 5-7 activities with details:
 5. Difficulty level (1-5)
 6. Approximate cost estimate
 
-Return the response in JSON format:
+Return the response in valid JSON format:
 {{
     "activities": [
         {{
@@ -195,7 +200,7 @@ Return the response in JSON format:
     ]
 }}
 
-Focus on activities that match the {theme} theme and are popular at this destination."""
+IMPORTANT: Return only valid JSON. Ensure all quotes are properly escaped and the response is complete."""
             )
         
         self.activity_chain = LLMChain(
@@ -311,7 +316,7 @@ Focus on activities that match the {theme} theme and are popular at this destina
             destinations = []
             
             for line in lines[:5]:  # Limit to 5 destinations
-                if ',' in line:
+                if ',' in line and not line.startswith('{') and not line.startswith('"'):
                     parts = line.split(',', 1)
                     destinations.append({
                         "place": parts[0].strip(),
@@ -325,12 +330,32 @@ Focus on activities that match the {theme} theme and are popular at this destina
             return {"destinations": destinations}
         
         else:
-            # Simple activity parsing
+            # Improved activity parsing - avoid JSON fragments
             lines = [line.strip().lstrip('- ') for line in response.split('\n') if line.strip()]
             activities = []
             
-            for line in lines[:7]:  # Limit to 7 activities
-                if line:
+            # Filter out JSON syntax and extract meaningful activity names
+            for line in lines[:20]:  # Look at more lines to find actual activities
+                # Skip JSON syntax lines
+                if any(skip in line for skip in ['{', '}', '"activities":', '"name":', '"description":', '"activity_type":', 
+                                               '"duration_hours":', '"difficulty_level":', '"cost_estimate":', '[', ']']):
+                    continue
+                
+                # Extract activity names from quoted strings
+                if '"' in line and ':' not in line:
+                    # This might be a quoted activity name
+                    activity_name = line.strip('"').strip(',').strip()
+                    if activity_name and len(activity_name) > 2:
+                        activities.append({
+                            "name": activity_name,
+                            "description": f"Enjoy {activity_name.lower()} at this destination",
+                            "activity_type": "Outdoor",
+                            "duration_hours": 2.0,
+                            "difficulty_level": 3,
+                            "cost_estimate": "Moderate"
+                        })
+                elif line and len(line) > 3 and not line.startswith('"') and ':' not in line:
+                    # Plain text activity
                     activities.append({
                         "name": line,
                         "description": f"Enjoy {line.lower()} at this destination",
@@ -339,6 +364,30 @@ Focus on activities that match the {theme} theme and are popular at this destina
                         "difficulty_level": 3,
                         "cost_estimate": "Moderate"
                     })
+                
+                if len(activities) >= 5:  # Limit to 5 activities
+                    break
+            
+            # If no activities found, create some default ones
+            if not activities:
+                activities = [
+                    {
+                        "name": "Explore the area",
+                        "description": "Take time to explore this amazing destination",
+                        "activity_type": "Outdoor",
+                        "duration_hours": 3.0,
+                        "difficulty_level": 2,
+                        "cost_estimate": "Low"
+                    },
+                    {
+                        "name": "Local sightseeing",
+                        "description": "Discover the local attractions and landmarks",
+                        "activity_type": "Cultural",
+                        "duration_hours": 4.0,
+                        "difficulty_level": 1,
+                        "cost_estimate": "Moderate"
+                    }
+                ]
             
             return {"activities": activities}
     
@@ -350,7 +399,10 @@ Focus on activities that match the {theme} theme and are popular at this destina
         """Generate destinations based on theme with comprehensive error handling."""
         
         start_time = time.time()
-        cache_key = f"{request.theme.value}_{request.count}_{request.include_activities}"
+        
+        # Safe theme handling - works with both string and enum
+        theme_str = request.theme.value if hasattr(request.theme, 'value') else str(request.theme)
+        cache_key = f"{theme_str}_{request.count}_{request.include_activities}"
         
         self.logger.info(
             "Starting destination generation",
@@ -364,7 +416,7 @@ Focus on activities that match the {theme} theme and are popular at this destina
         try:
             # Generate destinations
             destination_inputs = {
-                "theme": request.theme.value,
+                "theme": theme_str,
                 "count": request.count
             }
             
@@ -448,9 +500,12 @@ Focus on activities that match the {theme} theme and are popular at this destina
         """Generate activities for a specific destination."""
         
         try:
+            # Safe theme handling - works with both string and enum
+            theme_str = theme.value if hasattr(theme, 'value') else str(theme)
+            
             activity_inputs = {
                 "destination": destination.full_name,
-                "theme": theme.value
+                "theme": theme_str
             }
             
             activity_response = await self._safe_api_request(
@@ -468,10 +523,42 @@ Focus on activities that match the {theme} theme and are popular at this destina
             
             for act_info in activity_data.get("activities", []):
                 try:
+                    # Handle activity type parsing with fallback for combined types
+                    activity_type_str = act_info.get("activity_type", "Outdoor")
+                    
+                    # Map combined activity types to valid enum values
+                    activity_type_mapping = {
+                        "Cultural/Educational": "Cultural",
+                        "Educational/Cultural": "Educational", 
+                        "Outdoor/Adventure": "Outdoor",
+                        "Adventure/Outdoor": "Adventure",
+                        "Indoor/Cultural": "Indoor",
+                        "Cultural/Indoor": "Cultural",
+                        "Relaxation/Indoor": "Relaxation",
+                        "Indoor/Relaxation": "Indoor"
+                    }
+                    
+                    # Use mapping if available, otherwise try the original value
+                    if activity_type_str in activity_type_mapping:
+                        activity_type_str = activity_type_mapping[activity_type_str]
+                    
+                    # Try to create ActivityType, with fallback to "Outdoor"
+                    try:
+                        activity_type = ActivityType(activity_type_str)
+                    except ValueError:
+                        # If still invalid, try to extract the first valid part
+                        for valid_type in ActivityType:
+                            if valid_type.value.lower() in activity_type_str.lower():
+                                activity_type = valid_type
+                                break
+                        else:
+                            # Ultimate fallback
+                            activity_type = ActivityType.OUTDOOR
+                    
                     activity = Activity(
                         name=act_info.get("name", "Unknown Activity"),
                         description=act_info.get("description"),
-                        activity_type=ActivityType(act_info.get("activity_type", "Outdoor")),
+                        activity_type=activity_type,
                         duration_hours=act_info.get("duration_hours"),
                         difficulty_level=act_info.get("difficulty_level"),
                         cost_estimate=act_info.get("cost_estimate")

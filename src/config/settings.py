@@ -40,9 +40,11 @@ class Settings(BaseSettings):
     openai_model: str = Field(default="gpt-3.5-turbo", env="OPENAI_MODEL")
     openai_temperature: float = Field(default=0.6, env="OPENAI_TEMPERATURE")
     
-    # Fine-tuning settings
-    use_fine_tuned_model: bool = Field(default=False, env="USE_FINE_TUNED_MODEL")
-    fine_tuned_model_id: Optional[str] = Field(default=None, env="FINE_TUNED_MODEL_ID")
+    # Fine-tuning configuration
+    use_fine_tuned_model: bool = Field(default=True, description="Use fine-tuned model if available")
+    fine_tuned_model_id: Optional[str] = Field(default="ft:gpt-3.5-turbo-0125:personal:travel-destinations-20250602:Be2LDzFz", description="Fine-tuned model ID")
+    fine_tuning_epochs: int = Field(default=3, description="Number of training epochs")
+    fine_tuning_learning_rate: float = Field(default=1e-5, description="Learning rate for fine-tuning")
     
     # Security
     secret_key: str = Field(default="dev-secret-key", env="SECRET_KEY")
@@ -74,13 +76,14 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
     enable_metrics: bool = Field(default=True, env="ENABLE_METRICS")
     
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        # Load API key from file if not provided via environment
-        if not self.openai_api_key:
+    @validator("openai_api_key", pre=True)
+    def load_api_key(cls, v):
+        # If no API key provided via environment, try to load from file
+        if not v or v == "":
             file_api_key = load_api_key_from_file()
             if file_api_key:
-                self.openai_api_key = file_api_key
+                return file_api_key
+        return v
     
     @validator("openai_api_key")
     def validate_openai_api_key(cls, v):

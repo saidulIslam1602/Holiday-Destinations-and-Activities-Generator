@@ -37,182 +37,280 @@ class FineTuningManager(LoggerMixin):
         
         # Define comprehensive training data for each theme
         training_data = {
-            ThemeType.SPORTS: {
-                "examples": [
-                    {
-                        "input": "Generate 3 Sports destinations around the world",
-                        "destinations": [
-                            {
-                                "place": "Queenstown",
-                                "country": "New Zealand", 
-                                "description": "Adventure sports capital with bungee jumping, skydiving, and extreme sports in stunning alpine scenery.",
-                                "best_time_to_visit": "October to April",
-                                "coordinates": {"lat": -45.0312, "lng": 168.6626},
-                                "rating": 4.8,
-                                "activities": [
-                                    {
-                                        "name": "Bungee Jumping from Kawarau Gorge",
-                                        "description": "Experience the world's first commercial bungee jump site with a 43-meter drop over the historic Kawarau River.",
-                                        "activity_type": "Adventure",
-                                        "duration_hours": 2.0,
-                                        "difficulty_level": 4,
-                                        "cost_estimate": "High ($200-300)"
-                                    },
-                                    {
-                                        "name": "Jet Boating on Lake Wakatipu",
-                                        "description": "High-speed boat ride through narrow canyon walls with famous 360-degree spins.",
-                                        "activity_type": "Adventure",
-                                        "duration_hours": 1.5,
-                                        "difficulty_level": 2,
-                                        "cost_estimate": "Moderate ($100-150)"
-                                    }
-                                ]
-                            },
-                            {
-                                "place": "Chamonix",
-                                "country": "France",
-                                "description": "World-renowned ski resort and mountaineering hub in the French Alps, home to extreme skiing and climbing.",
-                                "best_time_to_visit": "December to April (skiing), June to September (climbing)",
-                                "coordinates": {"lat": 45.9237, "lng": 6.8694},
-                                "rating": 4.7,
-                                "activities": [
-                                    {
-                                        "name": "Off-piste skiing on Vallée Blanche",
-                                        "description": "Legendary off-piste ski route with breathtaking glacier views and challenging terrain.",
-                                        "activity_type": "Adventure",
-                                        "duration_hours": 6.0,
-                                        "difficulty_level": 5,
-                                        "cost_estimate": "High ($300-400)"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "keywords": ["adventure sports", "skiing", "mountaineering", "extreme sports", "athletics", "outdoor activities"]
-            },
+            ThemeType.SPORTS: [
+                {
+                    "input": "Generate 3 Sports destinations around the world",
+                    "destinations": [
+                        {
+                            "place": "Whistler",
+                            "country": "Canada",
+                            "description": "World-renowned ski resort and host of 2010 Winter Olympics, offering exceptional winter sports and mountain biking.",
+                            "best_time_to_visit": "December to April for skiing, June to September for summer activities",
+                            "coordinates": {"lat": 50.1163, "lng": -122.9574},
+                            "rating": 4.7
+                        },
+                        {
+                            "place": "Chamonix",
+                            "country": "France",
+                            "description": "World-renowned ski resort and mountaineering hub in the French Alps, home to extreme skiing and climbing.",
+                            "best_time_to_visit": "December to April (skiing), June to September (climbing)",
+                            "coordinates": {"lat": 45.9237, "lng": 6.8694},
+                            "rating": 4.7
+                        },
+                        {
+                            "place": "Wanaka",
+                            "country": "New Zealand",
+                            "description": "Adventure sports capital offering skydiving, bungee jumping, skiing, and extreme sports in stunning alpine setting.",
+                            "best_time_to_visit": "December to March (summer), June to August (skiing)",
+                            "coordinates": {"lat": -44.7, "lng": 169.1},
+                            "rating": 4.6
+                        }
+                    ]
+                },
+                {
+                    "input": "Generate 2 Sports destinations for water activities",
+                    "destinations": [
+                        {
+                            "place": "Gold Coast",
+                            "country": "Australia", 
+                            "description": "Premier surfing destination with perfect waves, beautiful beaches, and excellent water sports facilities.",
+                            "best_time_to_visit": "April to October",
+                            "coordinates": {"lat": -28.0167, "lng": 153.4000},
+                            "rating": 4.5
+                        },
+                        {
+                            "place": "Maui",
+                            "country": "United States",
+                            "description": "World-class windsurfing and kitesurfing destination with consistent trade winds and perfect conditions.",
+                            "best_time_to_visit": "April to October",
+                            "coordinates": {"lat": 20.7984, "lng": -156.3319},
+                            "rating": 4.8
+                        }
+                    ]
+                }
+            ],
             
-            ThemeType.HISTORICAL_PLACE: {
-                "examples": [
-                    {
-                        "input": "Generate 3 Historical Place destinations around the world",
-                        "destinations": [
-                            {
-                                "place": "Angkor Wat",
-                                "country": "Cambodia",
-                                "description": "Magnificent 12th-century temple complex and UNESCO World Heritage site, representing the pinnacle of Khmer architecture.",
-                                "best_time_to_visit": "November to March",
-                                "coordinates": {"lat": 13.4125, "lng": 103.8670},
-                                "rating": 4.9,
-                                "activities": [
-                                    {
-                                        "name": "Sunrise tour of Angkor Wat",
-                                        "description": "Witness the iconic temple silhouetted against the dawn sky in this magical early morning experience.",
-                                        "activity_type": "Cultural",
-                                        "duration_hours": 4.0,
-                                        "difficulty_level": 2,
-                                        "cost_estimate": "Moderate ($50-80)"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
+            ThemeType.HISTORICAL_PLACE: [
+                {
+                    "input": "Generate 3 Historical Place destinations around the world",
+                    "destinations": [
+                        {
+                            "place": "Angkor Wat",
+                            "country": "Cambodia",
+                            "description": "Magnificent 12th-century temple complex and UNESCO World Heritage site, representing the pinnacle of Khmer architecture.",
+                            "best_time_to_visit": "November to March",
+                            "coordinates": {"lat": 13.4125, "lng": 103.8670},
+                            "rating": 4.9
+                        },
+                        {
+                            "place": "Petra",
+                            "country": "Jordan",
+                            "description": "Ancient Nabataean city carved into rose-red sandstone cliffs, one of the New Seven Wonders of the World.",
+                            "best_time_to_visit": "March to May, September to November",
+                            "coordinates": {"lat": 30.3285, "lng": 35.4444},
+                            "rating": 4.8
+                        },
+                        {
+                            "place": "Machu Picchu",
+                            "country": "Peru",
+                            "description": "Mysterious Inca citadel perched high in the Andes, showcasing remarkable ancient engineering and architecture.",
+                            "best_time_to_visit": "May to September",
+                            "coordinates": {"lat": -13.1631, "lng": -72.5450},
+                            "rating": 4.9
+                        }
+                    ]
+                },
+                {
+                    "input": "Generate 2 Historical Place destinations in Europe",
+                    "destinations": [
+                        {
+                            "place": "Stonehenge",
+                            "country": "United Kingdom",
+                            "description": "Mysterious prehistoric monument dating back 5,000 years, one of the world's most famous ancient sites.",
+                            "best_time_to_visit": "May to September",
+                            "coordinates": {"lat": 51.1789, "lng": -1.8262},
+                            "rating": 4.3
+                        },
+                        {
+                            "place": "Acropolis",
+                            "country": "Greece",
+                            "description": "Ancient citadel overlooking Athens, featuring the iconic Parthenon and representing the birthplace of democracy.",
+                            "best_time_to_visit": "April to June, September to October",
+                            "coordinates": {"lat": 37.9715, "lng": 23.7267},
+                            "rating": 4.6
+                        }
+                    ]
+                }
+            ],
             
-            ThemeType.NATURAL_ATTRACTION: {
-                "examples": [
-                    {
-                        "input": "Generate 3 Natural Attraction destinations around the world",
-                        "destinations": [
-                            {
-                                "place": "Torres del Paine",
-                                "country": "Chile",
-                                "description": "Spectacular national park in Patagonia featuring dramatic granite towers, glacial lakes, and diverse wildlife.",
-                                "best_time_to_visit": "October to April",
-                                "coordinates": {"lat": -51.0, "lng": -73.0},
-                                "rating": 4.8,
-                                "activities": [
-                                    {
-                                        "name": "W Trek",
-                                        "description": "Multi-day hiking circuit showcasing the park's most iconic viewpoints and natural features.",
-                                        "activity_type": "Outdoor",
-                                        "duration_hours": 120.0,
-                                        "difficulty_level": 4,
-                                        "cost_estimate": "High ($500-800)"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
+            ThemeType.NATURAL_ATTRACTION: [
+                {
+                    "input": "Generate 3 Natural Attraction destinations around the world",
+                    "destinations": [
+                        {
+                            "place": "Torres del Paine",
+                            "country": "Chile",
+                            "description": "Spectacular national park in Patagonia featuring dramatic granite towers, glacial lakes, and diverse wildlife.",
+                            "best_time_to_visit": "October to April",
+                            "coordinates": {"lat": -51.0, "lng": -73.0},
+                            "rating": 4.8
+                        },
+                        {
+                            "place": "Banff National Park",
+                            "country": "Canada",
+                            "description": "Pristine wilderness in the Canadian Rockies with turquoise lakes, snow-capped peaks, and abundant wildlife.",
+                            "best_time_to_visit": "June to August",
+                            "coordinates": {"lat": 51.4968, "lng": -115.9281},
+                            "rating": 4.7
+                        },
+                        {
+                            "place": "Serengeti",
+                            "country": "Tanzania",
+                            "description": "Vast savanna ecosystem famous for the Great Migration and exceptional wildlife viewing opportunities.",
+                            "best_time_to_visit": "June to October",
+                            "coordinates": {"lat": -2.3333, "lng": 34.8333},
+                            "rating": 4.9
+                        }
+                    ]
+                },
+                {
+                    "input": "Generate 2 Natural Attraction destinations with waterfalls",
+                    "destinations": [
+                        {
+                            "place": "Iguazu Falls",
+                            "country": "Argentina/Brazil",
+                            "description": "Spectacular waterfall system with 275 individual falls, considered one of the New Seven Wonders of Nature.",
+                            "best_time_to_visit": "March to May, August to November",
+                            "coordinates": {"lat": -25.6953, "lng": -54.4367},
+                            "rating": 4.9
+                        },
+                        {
+                            "place": "Victoria Falls",
+                            "country": "Zambia/Zimbabwe",
+                            "description": "Massive waterfall on the Zambezi River, known as 'The Smoke That Thunders' with incredible power and beauty.",
+                            "best_time_to_visit": "April to October",
+                            "coordinates": {"lat": -17.9243, "lng": 25.8572},
+                            "rating": 4.8
+                        }
+                    ]
+                }
+            ],
             
-            ThemeType.SCIENTIFIC: {
-                "examples": [
-                    {
-                        "input": "Generate 3 Scientific destinations around the world",
-                        "destinations": [
-                            {
-                                "place": "Atacama Desert",
-                                "country": "Chile",
-                                "description": "World's driest non-polar desert, ideal for astronomical observations with numerous world-class observatories.",
-                                "best_time_to_visit": "March to May, September to November",
-                                "coordinates": {"lat": -24.5, "lng": -69.25},
-                                "rating": 4.6,
-                                "activities": [
-                                    {
-                                        "name": "ALMA Observatory tour",
-                                        "description": "Visit the world's largest radio telescope array and learn about cutting-edge astronomical research.",
-                                        "activity_type": "Educational",
-                                        "duration_hours": 8.0,
-                                        "difficulty_level": 2,
-                                        "cost_estimate": "Free (advance booking required)"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
+            ThemeType.SCIENTIFIC: [
+                {
+                    "input": "Generate 3 Scientific destinations around the world",
+                    "destinations": [
+                        {
+                            "place": "Atacama Desert",
+                            "country": "Chile",
+                            "description": "World's driest non-polar desert, ideal for astronomical observations with numerous world-class observatories.",
+                            "best_time_to_visit": "March to May, September to November",
+                            "coordinates": {"lat": -24.5, "lng": -69.25},
+                            "rating": 4.6
+                        },
+                        {
+                            "place": "CERN",
+                            "country": "Switzerland",
+                            "description": "European research organization operating the world's largest particle physics laboratory and the Large Hadron Collider.",
+                            "best_time_to_visit": "Year-round",
+                            "coordinates": {"lat": 46.2333, "lng": 6.0500},
+                            "rating": 4.7
+                        },
+                        {
+                            "place": "Galápagos Islands",
+                            "country": "Ecuador",
+                            "description": "Living laboratory of evolution where Darwin developed his theory, featuring unique endemic species and ecosystems.",
+                            "best_time_to_visit": "December to May",
+                            "coordinates": {"lat": -0.9538, "lng": -91.0},
+                            "rating": 4.9
+                        }
+                    ]
+                },
+                {
+                    "input": "Generate 2 Scientific destinations for space exploration",
+                    "destinations": [
+                        {
+                            "place": "Kennedy Space Center",
+                            "country": "United States",
+                            "description": "America's spaceport with historic launch sites, Space Shuttle exhibits, and active rocket launches.",
+                            "best_time_to_visit": "October to April",
+                            "coordinates": {"lat": 28.5721, "lng": -80.6480},
+                            "rating": 4.7
+                        },
+                        {
+                            "place": "Baikonur Cosmodrome",
+                            "country": "Kazakhstan",
+                            "description": "World's first and largest operational space launch facility, launching point for all crewed Soyuz missions.",
+                            "best_time_to_visit": "April to October",
+                            "coordinates": {"lat": 45.6, "lng": 63.3},
+                            "rating": 4.5
+                        }
+                    ]
+                }
+            ],
             
-            ThemeType.ENTERTAINMENT: {
-                "examples": [
-                    {
-                        "input": "Generate 3 Entertainment destinations around the world",
-                        "destinations": [
-                            {
-                                "place": "Las Vegas",
-                                "country": "United States",
-                                "description": "Entertainment capital featuring world-class shows, casinos, dining, and nightlife in the Nevada desert.",
-                                "best_time_to_visit": "March to May, October to November",
-                                "coordinates": {"lat": 36.1699, "lng": -115.1398},
-                                "rating": 4.2,
-                                "activities": [
-                                    {
-                                        "name": "Cirque du Soleil show",
-                                        "description": "Experience world-renowned acrobatic performances combining artistry, music, and theatrical spectacle.",
-                                        "activity_type": "Entertainment",
-                                        "duration_hours": 2.5,
-                                        "difficulty_level": 1,
-                                        "cost_estimate": "High ($100-300)"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
+            ThemeType.ENTERTAINMENT: [
+                {
+                    "input": "Generate 3 Entertainment destinations around the world",
+                    "destinations": [
+                        {
+                            "place": "Las Vegas",
+                            "country": "United States",
+                            "description": "Entertainment capital featuring world-class shows, casinos, dining, and nightlife in the Nevada desert.",
+                            "best_time_to_visit": "March to May, October to November",
+                            "coordinates": {"lat": 36.1699, "lng": -115.1398},
+                            "rating": 4.2
+                        },
+                        {
+                            "place": "Tokyo",
+                            "country": "Japan",
+                            "description": "Vibrant metropolis blending traditional culture with cutting-edge entertainment, gaming arcades, and pop culture.",
+                            "best_time_to_visit": "March to May, October to November",
+                            "coordinates": {"lat": 35.6762, "lng": 139.6503},
+                            "rating": 4.6
+                        },
+                        {
+                            "place": "Rio de Janeiro",
+                            "country": "Brazil",
+                            "description": "Carnival capital with vibrant nightlife, samba culture, beautiful beaches, and world-famous entertainment.",
+                            "best_time_to_visit": "December to March",
+                            "coordinates": {"lat": -22.9068, "lng": -43.1729},
+                            "rating": 4.4
+                        }
+                    ]
+                },
+                {
+                    "input": "Generate 2 Entertainment destinations for nightlife",
+                    "destinations": [
+                        {
+                            "place": "Ibiza",
+                            "country": "Spain",
+                            "description": "World-famous party island with legendary nightclubs, beautiful beaches, and vibrant electronic music scene.",
+                            "best_time_to_visit": "May to October",
+                            "coordinates": {"lat": 38.9067, "lng": 1.4206},
+                            "rating": 4.4
+                        },
+                        {
+                            "place": "Berlin",
+                            "country": "Germany",
+                            "description": "Underground culture capital with world-renowned techno clubs, alternative entertainment, and vibrant nightlife.",
+                            "best_time_to_visit": "May to September",
+                            "coordinates": {"lat": 52.5200, "lng": 13.4050},
+                            "rating": 4.3
+                        }
+                    ]
+                }
+            ]
         }
         
         # Generate training examples in OpenAI fine-tuning format
-        for theme, data in training_data.items():
-            for example in data["examples"]:
+        for theme, examples in training_data.items():
+            for example in examples:
                 # System message defining the model's role
                 system_message = f"""You are a specialized travel expert focusing on {theme.value.lower()} destinations. 
 Provide detailed, accurate information about destinations that excel in {theme.value.lower()} experiences. 
-Include specific activities, practical information, and authentic local insights. 
-Always return responses in valid JSON format with comprehensive destination and activity details."""
+Include specific location details, practical travel information, and authentic insights. 
+Always return responses in valid JSON format with comprehensive destination details."""
 
                 # User message with the request
                 user_message = example["input"]
@@ -297,20 +395,47 @@ Always return responses in valid JSON format with comprehensive destination and 
         )
         
         try:
-            response = self.client.fine_tuning.jobs.create(
-                training_file=training_file_id,
-                model=model,
-                suffix=suffix,
-                hyperparameters={
-                    "n_epochs": 3,  # Adjust based on your data size
-                }
+            # Check if the file is ready for training
+            file_info = self.client.files.retrieve(training_file_id)
+            self.logger.info(
+                "Training file status",
+                file_id=training_file_id,
+                status=file_info.status,
+                purpose=file_info.purpose,
+                bytes=file_info.bytes
             )
+            
+            if file_info.status != "processed":
+                self.logger.warning(
+                    "Training file not ready",
+                    file_id=training_file_id,
+                    status=file_info.status
+                )
+                # Wait a bit for file processing
+                time.sleep(10)
+            
+            # Create fine-tuning job with appropriate hyperparameters
+            job_params = {
+                "training_file": training_file_id,
+                "model": model,
+                "suffix": suffix
+            }
+            
+            # Only add hyperparameters for supported models
+            if model in ["gpt-3.5-turbo", "gpt-4"]:
+                job_params["hyperparameters"] = {
+                    "n_epochs": 3,  # Conservative number for small dataset
+                }
+            
+            response = self.client.fine_tuning.jobs.create(**job_params)
             
             job_id = response.id
             self.logger.info(
-                "Fine-tuning job created",
+                "Fine-tuning job created successfully",
                 job_id=job_id,
-                status=response.status
+                status=response.status,
+                model=response.model,
+                training_file=response.training_file
             )
             
             return job_id
@@ -319,32 +444,67 @@ Always return responses in valid JSON format with comprehensive destination and 
             self.logger.error(
                 "Failed to create fine-tuning job",
                 training_file_id=training_file_id,
-                error=str(e)
+                model=model,
+                error=str(e),
+                error_type=type(e).__name__
             )
+            
+            # Try to get more detailed error information
+            if hasattr(e, 'response'):
+                try:
+                    error_detail = e.response.json() if hasattr(e.response, 'json') else str(e.response.content)
+                    self.logger.error("OpenAI API error details", error_detail=error_detail)
+                except:
+                    pass
+            
             raise
     
-    def monitor_fine_tuning_job(self, job_id: str) -> Dict[str, Any]:
-        """Monitor fine-tuning job progress."""
+    def monitor_fine_tuning_job(self, job_id: str, max_wait_time: int = 3600) -> Dict[str, Any]:
+        """Monitor fine-tuning job progress with improved error handling."""
         
-        self.logger.info("Monitoring fine-tuning job", job_id=job_id)
+        self.logger.info("Starting fine-tuning job monitoring", job_id=job_id, max_wait_time=max_wait_time)
+        
+        start_time = time.time()
+        last_status = None
         
         while True:
             try:
+                # Check if we've exceeded maximum wait time
+                elapsed_time = time.time() - start_time
+                if elapsed_time > max_wait_time:
+                    self.logger.error(
+                        "Fine-tuning job monitoring timeout",
+                        job_id=job_id,
+                        elapsed_time=elapsed_time,
+                        max_wait_time=max_wait_time
+                    )
+                    return {
+                        "status": "timeout",
+                        "error": f"Monitoring timeout after {max_wait_time} seconds"
+                    }
+                
                 job = self.client.fine_tuning.jobs.retrieve(job_id)
                 status = job.status
                 
-                self.logger.info(
-                    "Fine-tuning job status",
-                    job_id=job_id,
-                    status=status
-                )
+                # Log status changes
+                if status != last_status:
+                    self.logger.info(
+                        "Fine-tuning job status change",
+                        job_id=job_id,
+                        status=status,
+                        elapsed_time=elapsed_time,
+                        model=getattr(job, 'model', 'unknown'),
+                        fine_tuned_model=getattr(job, 'fine_tuned_model', None)
+                    )
+                    last_status = status
                 
                 if status == "succeeded":
                     model_id = job.fine_tuned_model
                     self.logger.info(
                         "Fine-tuning completed successfully",
                         job_id=job_id,
-                        model_id=model_id
+                        model_id=model_id,
+                        elapsed_time=elapsed_time
                     )
                     
                     # Save model information
@@ -353,34 +513,66 @@ Always return responses in valid JSON format with comprehensive destination and 
                     return {
                         "status": "completed",
                         "model_id": model_id,
-                        "job_details": job
+                        "job_details": job,
+                        "elapsed_time": elapsed_time
                     }
                 
                 elif status == "failed":
+                    error_info = getattr(job, 'error', 'Unknown error')
                     self.logger.error(
                         "Fine-tuning job failed",
                         job_id=job_id,
-                        error=getattr(job, 'error', 'Unknown error')
+                        error=error_info,
+                        elapsed_time=elapsed_time
                     )
                     
                     return {
                         "status": "failed",
-                        "error": getattr(job, 'error', 'Unknown error')
+                        "error": error_info,
+                        "job_details": job,
+                        "elapsed_time": elapsed_time
+                    }
+                
+                elif status == "cancelled":
+                    self.logger.warning(
+                        "Fine-tuning job was cancelled",
+                        job_id=job_id,
+                        elapsed_time=elapsed_time
+                    )
+                    
+                    return {
+                        "status": "cancelled",
+                        "job_details": job,
+                        "elapsed_time": elapsed_time
                     }
                 
                 elif status in ["validating_files", "queued", "running"]:
-                    self.logger.info(
+                    # Job is in progress
+                    progress_info = {
+                        "status": status,
+                        "elapsed_time": elapsed_time
+                    }
+                    
+                    # Add training progress if available
+                    if hasattr(job, 'trained_tokens') and job.trained_tokens:
+                        progress_info["trained_tokens"] = job.trained_tokens
+                    
+                    self.logger.debug(
                         "Fine-tuning job in progress",
                         job_id=job_id,
-                        status=status
+                        **progress_info
                     )
-                    time.sleep(60)  # Check every minute
+                    
+                    # Wait before next check (shorter intervals for active jobs)
+                    wait_time = 30 if status == "running" else 60
+                    time.sleep(wait_time)
                 
                 else:
                     self.logger.warning(
                         "Unknown fine-tuning status",
                         job_id=job_id,
-                        status=status
+                        status=status,
+                        elapsed_time=elapsed_time
                     )
                     time.sleep(30)
                     
@@ -388,35 +580,72 @@ Always return responses in valid JSON format with comprehensive destination and 
                 self.logger.error(
                     "Error monitoring fine-tuning job",
                     job_id=job_id,
-                    error=str(e)
+                    error=str(e),
+                    error_type=type(e).__name__,
+                    elapsed_time=time.time() - start_time
                 )
+                
+                # Don't fail immediately on API errors, retry after a delay
                 time.sleep(60)
+                
+                # But fail if we've been retrying for too long
+                if time.time() - start_time > max_wait_time:
+                    return {
+                        "status": "monitoring_failed",
+                        "error": f"Monitoring failed: {str(e)}"
+                    }
     
     def _save_model_info(self, job_id: str, model_id: str, job_details: Any):
         """Save fine-tuned model information."""
+        
+        # Safely extract hyperparameters and usage information
+        hyperparameters = {}
+        if hasattr(job_details, 'hyperparameters') and job_details.hyperparameters:
+            hp = job_details.hyperparameters
+            hyperparameters = {
+                "n_epochs": getattr(hp, 'n_epochs', None),
+                "batch_size": getattr(hp, 'batch_size', None),
+                "learning_rate_multiplier": getattr(hp, 'learning_rate_multiplier', None)
+            }
+        
+        usage = {}
+        if hasattr(job_details, 'usage') and job_details.usage:
+            usage_obj = job_details.usage
+            usage = {
+                "training_tokens": getattr(usage_obj, 'training_tokens', None),
+                "validation_tokens": getattr(usage_obj, 'validation_tokens', None),
+                "total_tokens": getattr(usage_obj, 'total_tokens', None)
+            }
         
         model_info = {
             "model_id": model_id,
             "job_id": job_id,
             "created_at": datetime.now().isoformat(),
-            "base_model": job_details.model,
-            "status": job_details.status,
-            "training_file": job_details.training_file,
-            "hyperparameters": getattr(job_details, 'hyperparameters', {}),
-            "usage": getattr(job_details, 'usage', {})
+            "base_model": getattr(job_details, 'model', None),
+            "status": getattr(job_details, 'status', None),
+            "training_file": getattr(job_details, 'training_file', None),
+            "hyperparameters": hyperparameters,
+            "usage": usage
         }
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         model_file = self.model_artifacts_dir / f"model_info_{timestamp}.json"
         
-        with open(model_file, 'w') as f:
-            json.dump(model_info, f, indent=2)
-        
-        self.logger.info(
-            "Model information saved",
-            model_id=model_id,
-            info_file=str(model_file)
-        )
+        try:
+            with open(model_file, 'w') as f:
+                json.dump(model_info, f, indent=2)
+            
+            self.logger.info(
+                "Model information saved",
+                model_id=model_id,
+                info_file=str(model_file)
+            )
+        except Exception as e:
+            self.logger.error(
+                "Failed to save model information",
+                model_id=model_id,
+                error=str(e)
+            )
     
     def list_fine_tuned_models(self) -> List[Dict[str, Any]]:
         """List all available fine-tuned models."""
